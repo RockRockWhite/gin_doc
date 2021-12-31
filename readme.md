@@ -51,14 +51,14 @@ func main() {
 func main() {
 	router := gin.Default()
 
-    // 使用:[param] 只会处理参数匹配的 /user/john 但是并不会处理 /user/ 或者 /user
+	// 使用:[param] 只会处理参数匹配的 /user/john 但是并不会处理 /user/ 或者 /user
 	// This handler will match /user/john but will not match /user/ or /user
 	router.GET("/user/:name", func(c *gin.Context) {
 		name := c.Param("name")
 		c.String(http.StatusOK, "Hello %s", name)
 	})
 
-    // 使用*[param] 可以同时处理有这个参数的 /user/john/ 和没有这个参数的 /user/john/send
+	// 使用*[param] 可以同时处理有这个参数的 /user/john/ 和没有这个参数的 /user/john/send
 	// However, this one will match /user/john/ and also /user/john/send
 	// If no other routers match /user/john, it will redirect to /user/john/
 	router.GET("/user/:name/*action", func(c *gin.Context) {
@@ -75,8 +75,8 @@ func main() {
 		c.String(http.StatusOK, "%t", b)
 	})
 
-    // 绝对路径的优先级高于含有参数的路径 不管路由他们的方法定义顺序
-	// This handler will add a new router for /user/groups.
+	// 绝对路径的优先级高于含有参数的路径 不管路由他们的方法定义顺序
+    // This handler will add a new router for /user/groups.
 	// Exact routes are resolved before param routes, regardless of the order they were defined.
 	// Routes starting with /user/groups are never interpreted as /user/:name/... routes
 	router.GET("/user/groups", func(c *gin.Context) {
