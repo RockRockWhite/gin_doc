@@ -87,3 +87,93 @@ func main() {
 }
 ```
 
+## 4. Querystring
+
+```go
+func main() {
+	router := gin.Default()
+
+	// Query string parameters are parsed using the existing underlying request object.
+	// The request responds to a url matching:  /welcome?firstname=Jane&lastname=Doe
+	router.GET("/welcome", func(c *gin.Context) {
+		firstname := c.DefaultQuery("firstname", "Guest")
+		lastname := c.Query("lastname") // shortcut for c.Request.URL.Query().Get("lastname")
+
+		c.String(http.StatusOK, "Hello %s %s", firstname, lastname)
+	})
+	router.Run(":8080")
+}
+```
+
+## 5. Multipart/Urlencoded Form
+
+```go
+func main() {
+	router := gin.Default()
+
+	router.POST("/form_post", func(c *gin.Context) {
+		message := c.PostForm("message")
+		nick := c.DefaultPostForm("nick", "anonymous")
+
+		c.JSON(200, gin.H{
+			"status":  "posted",
+			"message": message,
+			"nick":    nick,
+		})
+	})
+	router.Run(":8080")
+}
+```
+
+### 另外一个例子 Another example: query + post form
+
+> ```
+> POST /post?id=1234&page=1 HTTP/1.1
+> Content-Type: application/x-www-form-urlencoded
+> 
+> name=manu&message=this_is_great
+> ```
+
+```go
+func main() {
+	router := gin.Default()
+
+	router.POST("/post", func(c *gin.Context) {
+
+		id := c.Query("id")
+		page := c.DefaultQuery("page", "0")
+		name := c.PostForm("name")
+		message := c.PostForm("message")
+
+		fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
+	})
+	router.Run(":8080")
+}
+```
+
+> ```
+> id: 1234; page: 1; name: manu; message: this_is_great
+> ```
+
+## 6. querystring 或者 postform 参数传map类型
+
+> POST /post?ids[a]=1234&ids[b]=hello HTTP/1.1
+> Content-Type: application/x-www-form-urlencoded
+>
+> names[first]=thinkerou&names[second]=tianou
+
+```go
+func main() {
+	router := gin.Default()
+
+	router.POST("/post", func(c *gin.Context) {
+
+		ids := c.QueryMap("ids")
+		names := c.PostFormMap("names")
+
+		fmt.Printf("ids: %v; names: %v", ids, names)
+	})
+	router.Run(":8080")
+}
+```
+
